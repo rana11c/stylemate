@@ -1,0 +1,57 @@
+/* RTL (Right to Left) Specific Styles */
+
+body {
+    direction: rtl;
+    text-align: right;
+}
+
+.header-icon {
+    margin-left: 0;
+    margin-right: 20px;
+}
+
+.search-icon {
+    margin-left: 0;
+    margin-right: 8px;
+}
+
+/* Fix Alignments */
+.header-right {
+    flex-direction: row-reverse;
+}
+
+/* Fix form elements */
+input, select, textarea {
+    text-align: right;
+}
+
+/* Fix modal footer */
+.modal-footer {
+    justify-content: flex-start;
+}
+
+/* Fix product tag position */
+.product-tag {
+    right: auto;
+    left: 10px;
+}
+
+/* Fix button icons */
+.btn-icon-left {
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+.btn-icon-right {
+    margin-left: 0;
+    margin-right: 8px;
+}
+
+/* Fix weather cards scrolling */
+.weather-cards {
+    direction: ltr; /* Keep the scrolling direction ltr */
+}
+
+.weather-card {
+    direction: rtl; /* But the content should be rtl */
+}

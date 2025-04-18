@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <h1 class="profile-name">{{ current_user.username }}</h1>
+        <div class="profile-email">{{ current_user.email }}</div>
+    </div>
+    
+    <div class="profile-stats">
+        <div class="profile-stat">
+            <div class="profile-stat-value">{{ current_user.closet_items.count() }}</div>
+            <div class="profile-stat-label">قطع الملابس</div>
+        </div>
+        <div class="profile-stat">
+            <div class="profile-stat-value">{{ current_user.favorites.count() }}</div>
+            <div class="profile-stat-label">المفضلة</div>
+        </div>
+        <div class="profile-stat">
+            <div class="profile-stat-value">0</div>
+            <div class="profile-stat-label">الإطلالات</div>
+        </div>
+    </div>
+    
+    <div class="profile-actions">
+        <a href="{{ url_for('closet') }}" class="btn btn-primary btn-block">
+            <i class="fas fa-tshirt"></i> إدارة خزانة ملابسي
+        </a>
+        
+        <a href="#" class="btn btn-secondary btn-block" style="margin-top: 10px;">
+            <i class="fas fa-cog"></i> إعدادات الحساب
+        </a>
+        
+        <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-block" style="margin-top: 10px;">
+            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </a>
+    </div>
+    
+    <!-- Recently Added Items -->
+    <div class="recent-items">
+        <h2 class="section-heading">آخر الإضافات</h2>
+        
+        <div class="closet-grid">
+            {% if current_user.closet_items.count() > 0 %}
+                {% for item in current_user.closet_items.order_by(ClosetItem.created_at.desc()).limit(6).all() %}
+                <div class="closet-item" data-category="{{ item.category }}">
+                    <img src="{{ item.image_url }}" alt="{{ item.name }}" class="closet-image">
+                    <div class="closet-category">{{ item.category }}</div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="closet-empty">
+                    <p>لم تقم بإضافة أي قطع ملابس بعد</p>
+                    <a href="{{ url_for('closet') }}" class="btn btn-primary" style="margin-top: 15px;">
+                        إضافة ملابس
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

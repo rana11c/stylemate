@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <!-- Date & Weather Info -->
+    <div class="weather-info">
+        <div class="current-date">الاثنين، ١٢ شوال</div>
+        <div class="current-weather">
+            <span class="weather-temp">°{{ weather.today.temp }}</span>
+            <span class="weather-description">مشمس</span>
+        </div>
+    </div>
+    
+    <!-- Outfit of the Day -->
+    <section class="outfit-section">
+        <h2>إطلالة اليوم</h2>
+        
+        <div class="outfit-error">
+            <div>حدث خطأ أثناء تحميل الإطلالة</div>
+            <button class="outfit-reload" onclick="reloadOutfit()">إعادة المحاولة</button>
+        </div>
+    </section>
+    
+    <!-- Weather Forecast -->
+    <section class="weather-section">
+        <h2 class="weather-heading">اقتراحات حسب الطقس</h2>
+        
+        <div class="weather-cards">
+            <!-- Today -->
+            <div class="weather-card today">
+                <div class="weather-day">اليوم</div>
+                <div class="weather-icon">
+                    <svg class="weather-svg"><use xlink:href="{{ url_for('static', filename='images/weather-icons.svg') }}#weather-sunny"></use></svg>
+                </div>
+                <div class="weather-temp">°{{ weather.today.temp }}</div>
+                <div class="weather-condition">{{ weather.today.condition }}</div>
+                <div class="outfit-suggestion">اقتراح: ملابس متوسطة</div>
+            </div>
+            
+            <!-- Tomorrow -->
+            <div class="weather-card">
+                <div class="weather-day">غداً</div>
+                <div class="weather-icon">
+                    <svg class="weather-svg"><use xlink:href="{{ url_for('static', filename='images/weather-icons.svg') }}#weather-partly-cloudy"></use></svg>
+                </div>
+                <div class="weather-temp">°{{ weather.tomorrow.temp }}</div>
+                <div class="weather-condition">{{ weather.tomorrow.condition }}</div>
+                <div class="outfit-suggestion">اقتراح: طبقات خفيفة</div>
+            </div>
+            
+            <!-- After Tomorrow -->
+            <div class="weather-card">
+                <div class="weather-day">بعد غد</div>
+                <div class="weather-icon">
+                    <svg class="weather-svg"><use xlink:href="{{ url_for('static', filename='images/weather-icons.svg') }}#weather-cloudy"></use></svg>
+                </div>
+                <div class="weather-temp">°{{ weather.after_tomorrow.temp }}</div>
+                <div class="weather-condition">{{ weather.after_tomorrow.condition }}</div>
+                <div class="outfit-suggestion">اقتراح: معطف خفيف</div>
+            </div>
+            
+            <!-- Three Days Later -->
+            <div class="weather-card">
+                <div class="weather-day">بعد ثلاثة أيام</div>
+                <div class="weather-icon">
+                    <svg class="weather-svg"><use xlink:href="{{ url_for('static', filename='images/weather-icons.svg') }}#weather-sunny"></use></svg>
+                </div>
+                <div class="weather-temp">°{{ weather.three_days_later.temp }}</div>
+                <div class="weather-condition">{{ weather.three_days_later.condition }}</div>
+                <div class="outfit-suggestion">اقتراح: ملابس خفيفة</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Featured Products -->
+    {% if current_user.is_authenticated %}
+    <section class="featured-products">
+        <h2 class="product-heading">توصيات مناسبة لخزانتك</h2>
+        
+        <div class="product-grid">
+            <!-- Product 1 -->
+            <div class="product-card">
+                <div class="product-tag">يناسب خزانتك</div>
+                <img src="https://images.unsplash.com/photo-1523194258983-4ef0203f0c47" alt="قميص كلاسيكي أزرق" class="product-image">
+                <div class="product-details">
+                    <div class="product-name">قميص كلاسيكي أزرق</div>
+                    <div class="product-price">٢٩٩ ريال</div>
+                    <div class="product-store">ركن الأناقة</div>
+                </div>
+            </div>
+            
+            <!-- Product 2 -->
+            <div class="product-card">
+                <div class="product-tag">يناسب خزانتك</div>
+                <img src="https://images.unsplash.com/photo-1565191262855-2e6c531f3867" alt="بنطال كلاسيكي بيج" class="product-image">
+                <div class="product-details">
+                    <div class="product-name">بنطال كلاسيكي بيج</div>
+                    <div class="product-price">٣٤٩ ريال</div>
+                    <div class="product-store">ركن ستايلر</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/weather.js') }}"></script>
+{% endblock %}

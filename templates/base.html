@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ستايلر - مساعدك الشخصي لتنسيق الملابس</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- RTL Support -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/rtl.css') }}">
+    <!-- Additional CSS for specific pages -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% if current_user.is_authenticated %}logged-in{% endif %}">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="ستايلر" width="120">
+        </div>
+        
+        <div class="header-right">
+            <a href="#" class="header-icon">
+                <i class="far fa-bell"></i>
+            </a>
+            <a href="#" class="header-icon">
+                <i class="fas fa-ellipsis-v"></i>
+            </a>
+        </div>
+    </header>
+    
+    <!-- Flash Messages -->
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Floating Action Button -->
+    <a href="#" class="fab" id="fab-button">
+        <i class="fas fa-plus fab-icon"></i>
+    </a>
+    
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="{{ url_for('index') }}" class="nav-item" data-target="">
+            <i class="fas fa-tshirt nav-icon"></i>
+            <span class="nav-label">ملابس</span>
+        </a>
+        <a href="#" class="nav-item" data-target="suggestions">
+            <i class="fas fa-lightbulb nav-icon"></i>
+            <span class="nav-label">اقتراحات</span>
+        </a>
+        <div class="nav-item-placeholder"></div>
+        <a href="{{ url_for('shopping') }}" class="nav-item" data-target="shopping">
+            <i class="fas fa-shopping-bag nav-icon"></i>
+            <span class="nav-label">تسوق</span>
+        </a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('profile') }}" class="nav-item" data-target="profile">
+            <i class="fas fa-user nav-icon"></i>
+            <span class="nav-label">حسابي</span>
+        </a>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="nav-item" data-target="login">
+            <i class="fas fa-user nav-icon"></i>
+            <span class="nav-label">دخول</span>
+        </a>
+        {% endif %}
+    </nav>
+    
+    <!-- Main JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- Additional JavaScript for specific pages -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

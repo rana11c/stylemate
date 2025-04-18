@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="page-title">خزانة ملابسي</h1>
+    
+    <!-- Closet Filters -->
+    <div class="closet-filters">
+        <button class="closet-filter-btn active" data-category="all">الكل</button>
+        <button class="closet-filter-btn" data-category="tops">ملابس علوية</button>
+        <button class="closet-filter-btn" data-category="bottoms">ملابس سفلية</button>
+        <button class="closet-filter-btn" data-category="outerwear">ملابس خارجية</button>
+        <button class="closet-filter-btn" data-category="shoes">أحذية</button>
+        <button class="closet-filter-btn" data-category="accessories">إكسسوارات</button>
+    </div>
+    
+    <!-- Closet Items -->
+    <div class="closet-grid">
+        {% if closet_items %}
+            {% for item in closet_items %}
+            <div class="closet-item" data-category="{{ item.category }}">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}" class="closet-image">
+                <div class="closet-category">{{ item.category }}</div>
+                
+                <!-- Delete Form (hidden) -->
+                <form id="delete-form-{{ item.id }}" method="post" action="{{ url_for('delete_closet_item', item_id=item.id) }}" style="display: none;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                </form>
+                
+                <!-- Options Button -->
+                <button class="closet-item-options" onclick="openItemOptions({{ item.id }})">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="closet-empty">
+                <p>لم تقم بإضافة أي قطع ملابس بعد</p>
+                <button class="btn btn-primary" style="margin-top: 15px;" onclick="openAddItemModal()">
+                    إضافة ملابس
+                </button>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Add Item Modal -->
+    <div class="modal-overlay" id="add-item-modal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">إضافة قطعة ملابس جديدة</h3>
+                <button class="modal-close" onclick="closeModal('add-item-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="add-item-form" method="post" action="{{ url_for('add_closet_item') }}" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="item-name" class="form-label">اسم القطعة</label>
+                        <input type="text" id="item-name" name="name" required placeholder="مثال: قميص أزرق">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="item-category" class="form-label">الفئة</label>
+                        <select id="item-category" name="category" required>
+                            <option value="">اختر الفئة</option>
+                            <option value="tops">ملابس علوية</option>
+                            <option value="bottoms">ملابس سفلية</option>
+                            <option value="outerwear">ملابس خارجية</option>
+                            <option value="shoes">أحذية</option>
+                            <option value="accessories">إكسسوارات</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="item-color" class="form-label">اللون</label>
+                        <input type="text" id="item-color" name="color" placeholder="مثال: أزرق داكن">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="item-image" class="form-label">صورة القطعة</label>
+                        <input type="text" id="item-image" name="image_url" placeholder="أدخل رابط الصورة">
+                    </div>
+                    
+                    <img id="image-preview" style="display: none; max-width: 100%; margin-top: 10px;">
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-block">إضافة القطعة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Item Options Modal -->
+    <div class="modal-overlay" id="item-options-modal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">خيارات</h3>
+                <button class="modal-close" onclick="closeModal('item-options-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="options-list">
+                    <button class="option-item" id="edit-item-btn">
+                        <i class="fas fa-edit"></i> تعديل
+                    </button>
+                    <button class="option-item" id="delete-item-btn">
+                        <i class="fas fa-trash"></i> حذف
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Item Button -->
+<script>
+    document.getElementById('fab-button').addEventListener('click', function() {
+        openAddItemModal();
+    });
+    
+    function openAddItemModal() {
+        openModal('add-item-modal');
+    }
+    
+    function openItemOptions(itemId) {
+        // Store the item ID for later use
+        document.getElementById('delete-item-btn').setAttribute('data-item-id', itemId);
+        document.getElementById('edit-item-btn').setAttribute('data-item-id', itemId);
+        
+        // Open the modal
+        openModal('item-options-modal');
+    }
+    
+    // Initialize item option buttons
+    document.addEventListener('DOMContentLoaded', function() {
+        // Delete button
+        document.getElementById('delete-item-btn').addEventListener('click', function() {
+            const itemId = this.getAttribute('data-item-id');
+            
+            if (confirm('هل أنت متأكد من حذف هذه القطعة من خزانتك؟')) {
+                document.getElementById(`delete-form-${itemId}`).submit();
+            }
+            
+            closeModal('item-options-modal');
+        });
+        
+        // Edit button (would redirect to edit page in a real app)
+        document.getElementById('edit-item-btn').addEventListener('click', function() {
+            const itemId = this.getAttribute('data-item-id');
+            showFlashMessage('سيتم تنفيذ هذه الميزة قريبًا', 'info');
+            closeModal('item-options-modal');
+        });
+    });
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/closet.js') }}"></script>
+{% endblock %}

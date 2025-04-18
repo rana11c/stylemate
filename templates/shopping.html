@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="page-title">تسوق</h1>
+    
+    <!-- Search Box -->
+    <div class="search-box">
+        <form id="shopping-search-form">
+            <input type="text" id="shopping-search" class="search-input" placeholder="ابحث عن منتجات..." />
+            <button type="submit" class="search-button">
+                <i class="fas fa-search search-icon"></i>
+            </button>
+        </form>
+    </div>
+    
+    <!-- Shopping Tabs -->
+    <div class="tab-menu">
+        <a href="#" class="tab-item active" data-target="recommended">
+            <i class="fas fa-star"></i> توصيات لك
+        </a>
+        <a href="#" class="tab-item" data-target="popular">
+            <i class="fas fa-fire"></i> الأكثر رواجاً
+        </a>
+        <a href="#" class="tab-item" data-target="favorites">
+            <i class="fas fa-heart"></i> المفضلة
+        </a>
+    </div>
+    
+    <!-- Product Recommendations -->
+    <section class="recommendations-section">
+        <h2 class="product-heading">توصيات مناسبة لخزانتك</h2>
+        
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-tag">يناسب خزانتك</div>
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
+                <div class="product-details">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-price">{{ product.price }} ريال</div>
+                    <button class="favorite-btn {% if product.id in favorites %}active{% endif %}" data-product-id="{{ product.id }}">
+                        <i class="{% if product.id in favorites %}fas{% else %}far{% endif %} fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- If no products are available -->
+            {% if not products %}
+            <div class="empty-state">
+                <p>لم يتم العثور على منتجات</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Load More Button -->
+        {% if products|length >= 8 %}
+        <div class="load-more-container">
+            <button class="btn btn-secondary load-more-btn" data-page="1" onclick="loadMoreProducts()">
+                عرض المزيد
+            </button>
+        </div>
+        {% endif %}
+    </section>
+    
+    <!-- Popular Categories -->
+    <section class="categories-section">
+        <h2 class="section-heading">تصفح حسب الفئة</h2>
+        
+        <div class="category-grid">
+            <a href="#" class="category-card">
+                <div class="category-icon"><i class="fas fa-tshirt"></i></div>
+                <div class="category-name">قمصان</div>
+            </a>
+            <a href="#" class="category-card">
+                <div class="category-icon"><i class="fas fa-socks"></i></div>
+                <div class="category-name">بناطيل</div>
+            </a>
+            <a href="#" class="category-card">
+                <div class="category-icon"><i class="fas fa-shoe-prints"></i></div>
+                <div class="category-name">أحذية</div>
+            </a>
+            <a href="#" class="category-card">
+                <div class="category-icon"><i class="fas fa-glasses"></i></div>
+                <div class="category-name">إكسسوارات</div>
+            </a>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/shopping.js') }}"></script>
+{% endblock %}

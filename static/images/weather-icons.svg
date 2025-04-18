@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Sunny Icon -->
+  <symbol id="weather-sunny" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+    <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2"/>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/>
+    <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2"/>
+    <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2"/>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
+  </symbol>
+  
+  <!-- Partly Cloudy Icon -->
+  <symbol id="weather-partly-cloudy" viewBox="0 0 24 24">
+    <path d="M8,4 C12,4 14,8 14,8 C14,8 16,8 18,9.5 C20,11 20,14 20,14 L8,14 C5,14 3,12 3,9.5 C3,7 5,4 8,4 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle cx="8" cy="4" r="2" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="8" y1="0" x2="8" y2="2" stroke="currentColor" stroke-width="2"/>
+    <line x1="3.22" y1="2.22" x2="5.64" y2="3.64" stroke="currentColor" stroke-width="2"/>
+    <line x1="1" y1="7" x2="3" y2="7" stroke="currentColor" stroke-width="2"/>
+  </symbol>
+  
+  <!-- Cloudy Icon -->
+  <symbol id="weather-cloudy" viewBox="0 0 24 24">
+    <path d="M8,9 C11,9 13,12 13,12 C13,12 15,12 17,13.5 C19,15 19,18 19,18 L8,18 C5,18 3,16 3,13.5 C3,11 5,9 8,9 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M13,7 C16,7 18,10 18,10 C18,10 20,10 22,11.5 C24,13 24,16 24,16" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2"/>
+  </symbol>
+  
+  <!-- Rainy Icon -->
+  <symbol id="weather-rainy" viewBox="0 0 24 24">
+    <path d="M8,5 C11,5 13,8 13,8 C13,8 15,8 17,9.5 C19,11 19,14 19,14 L8,14 C5,14 3,12 3,9.5 C3,7 5,5 8,5 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="7" y1="16" x2="6" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <line x1="12" y1="16" x2="11" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <line x1="17" y1="16" x2="16" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+</svg>
