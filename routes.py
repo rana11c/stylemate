@@ -357,14 +357,14 @@ def initialize_demo_data():
                 'name': 'جاكيت جينز',
                 'category': 'outerwear',
                 'price': 450,
-                'image_url': 'https://images.unsplash.com/photo-1581922730118-2c9bcc450def',
+                'image_url': 'https://images.pexels.com/photos/1124468/pexels-photo-1124468.jpeg?auto=compress&cs=tinysrgb&w=600',
                 'description': 'جاكيت جينز مناسب للطقس المعتدل'
             },
             {
                 'name': 'حذاء رياضي أبيض',
                 'category': 'shoes',
                 'price': 399,
-                'image_url': 'https://images.unsplash.com/photo-1545312981-de7f4d7cb816',
+                'image_url': 'https://images.pexels.com/photos/19090/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=600',
                 'description': 'حذاء رياضي أبيض مريح للاستخدام اليومي'
             }
         ]
