@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize size option buttons
     initSizeButtons();
     
+    // Initialize payment method tabs
+    initPaymentTabs();
+    
     // Show cart summary if items exist
     if (cart.length > 0) {
         document.getElementById('cart-summary').classList.add('active');
@@ -541,32 +544,80 @@ function proceedToCheckout() {
 
 // Complete order
 function completeOrder() {
+    // Validate payment fields if credit card is selected
+    const paymentTabs = document.querySelectorAll('.payment-method-tab');
+    const activeTab = Array.from(paymentTabs).find(tab => tab.classList.contains('active'));
+    
+    if (activeTab && activeTab.getAttribute('data-target') === 'card-payment') {
+        // Validate card details
+        const cardNumber = document.getElementById('card-number');
+        const cardName = document.getElementById('card-name');
+        const cardExpiry = document.getElementById('card-expiry');
+        const cardCvc = document.getElementById('card-cvc');
+        
+        if (!cardNumber || !cardNumber.value || cardNumber.value.replace(/\s/g, '').length < 16) {
+            showFlashMessage('يرجى إدخال رقم بطاقة صحيح', 'error');
+            return;
+        }
+        
+        if (!cardName || !cardName.value) {
+            showFlashMessage('يرجى إدخال اسم حامل البطاقة', 'error');
+            return;
+        }
+        
+        if (!cardExpiry || !cardExpiry.value || !cardExpiry.value.includes('/')) {
+            showFlashMessage('يرجى إدخال تاريخ انتهاء البطاقة بالصيغة الصحيحة (MM/YY)', 'error');
+            return;
+        }
+        
+        if (!cardCvc || !cardCvc.value || cardCvc.value.length < 3) {
+            showFlashMessage('يرجى إدخال رمز الأمان (CVC)', 'error');
+            return;
+        }
+    }
+    
     // Get form data
     const name = document.getElementById('checkout-name').value;
     const phone = document.getElementById('checkout-phone').value;
     const address = document.getElementById('checkout-address').value;
-    const payment = document.getElementById('checkout-payment').value;
     
     // Validate form (simple validation)
-    if (!name || !phone || !address || !payment) {
-        showFlashMessage('يرجى ملء جميع الحقول المطلوبة', 'error');
+    if (!name) {
+        showFlashMessage('يرجى إدخال الاسم الكامل', 'error');
         return;
     }
     
-    // Generate random order number
-    const orderNumber = Math.floor(10000 + Math.random() * 90000);
-    document.getElementById('order-number').textContent = orderNumber;
+    if (!phone || phone.length < 10) {
+        showFlashMessage('يرجى إدخال رقم هاتف صحيح', 'error');
+        return;
+    }
     
-    // Close checkout modal
-    closeModal('checkout-modal');
+    if (!address) {
+        showFlashMessage('يرجى إدخال عنوان التوصيل', 'error');
+        return;
+    }
     
-    // Open confirmation modal
-    openModal('order-confirmation-modal');
+    // Show processing message
+    showFlashMessage('جاري معالجة الطلب...', 'info');
     
-    // Clear cart after successful order
-    cart = [];
-    localStorage.setItem('styler_cart', JSON.stringify(cart));
-    updateCartSummary();
+    // In a real app, this would submit the order data to the server
+    // Simulate processing delay
+    setTimeout(() => {
+        // Generate random order number
+        const orderNumber = Math.floor(10000 + Math.random() * 90000);
+        document.getElementById('order-number').textContent = orderNumber;
+        
+        // Clear cart
+        cart = [];
+        localStorage.setItem('styler_cart', JSON.stringify(cart));
+        updateCartSummary();
+        
+        // Close checkout modal
+        closeModal('checkout-modal');
+        
+        // Open confirmation modal
+        openModal('order-confirmation-modal');
+    }, 1500);
 }
 
 // Quantity controls
@@ -581,6 +632,58 @@ function decreaseQuantity() {
     let quantity = parseInt(quantityInput.value) || 1;
     if (quantity > 1) {
         quantityInput.value = quantity - 1;
+    }
+}
+
+// Initialize payment method tabs
+function initPaymentTabs() {
+    const paymentTabs = document.querySelectorAll('.payment-method-tab');
+    
+    paymentTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from all tabs
+            paymentTabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Hide all content sections
+            const contentSections = document.querySelectorAll('.payment-method-content');
+            contentSections.forEach(section => section.classList.remove('active'));
+            
+            // Show selected content
+            const targetId = this.getAttribute('data-target');
+            if (targetId) {
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            }
+        });
+    });
+    
+    // Format credit card number with spaces
+    const cardNumberInput = document.getElementById('card-number');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '');
+            if (value.length > 0) {
+                value = value.match(new RegExp('.{1,4}', 'g')).join(' ');
+            }
+            e.target.value = value;
+        });
+    }
+    
+    // Format expiry date with slash
+    const cardExpiryInput = document.getElementById('card-expiry');
+    if (cardExpiryInput) {
+        cardExpiryInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\//g, '');
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+            }
+            e.target.value = value;
+        });
     }
 }
 
