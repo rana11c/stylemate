@@ -307,6 +307,11 @@ def daily_outfit():
     
     return jsonify({'status': 'ai_generated', 'outfit': recommendations})
 
+# Suggestions page
+@app.route('/suggestions')
+def suggestions():
+    return render_template('suggestions.html')
+
 # API endpoint for product recommendations
 @app.route('/api/product_recommendations')
 @login_required

@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="page-title">اقتراحات</h1>
+    
+    <!-- Tab Menu for Suggestions Types -->
+    <div class="tab-menu">
+        <a href="#" class="tab-item active" data-target="outfit">
+            <i class="fas fa-tshirt"></i> إطلالات متكاملة
+        </a>
+        <a href="#" class="tab-item" data-target="style">
+            <i class="fas fa-palette"></i> أنماط الملابس
+        </a>
+        <a href="#" class="tab-item" data-target="occasion">
+            <i class="fas fa-calendar-alt"></i> مناسبات
+        </a>
+    </div>
+    
+    <!-- Outfit Suggestions Section -->
+    <section id="outfit-section" class="suggestions-section">
+        <h2 class="section-heading">إطلالات مقترحة</h2>
+        
+        <div class="suggestion-cards">
+            <!-- Outfit Suggestion 1 -->
+            <div class="suggestion-card">
+                <div class="suggestion-image">
+                    <img src="https://images.pexels.com/photos/297933/pexels-photo-297933.jpeg?auto=compress&cs=tinysrgb&w=600" alt="إطلالة كاجوال">
+                </div>
+                <div class="suggestion-details">
+                    <h3 class="suggestion-title">إطلالة كاجوال للجامعة</h3>
+                    <p class="suggestion-description">مناسبة لأيام الجامعة وفصل الربيع، مزيج من الراحة والأناقة</p>
+                    <div class="suggestion-meta">
+                        <span class="suggestion-weather"><i class="fas fa-sun"></i> طقس معتدل (20-25)</span>
+                    </div>
+                    <div class="suggestion-actions">
+                        <button class="btn btn-primary btn-sm" onclick="saveOutfit(1)">
+                            <i class="fas fa-save"></i> حفظ
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="showSimilar(1)">
+                            <i class="fas fa-search"></i> مشابه
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Outfit Suggestion 2 -->
+            <div class="suggestion-card">
+                <div class="suggestion-image">
+                    <img src="https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=600" alt="إطلالة رسمية">
+                </div>
+                <div class="suggestion-details">
+                    <h3 class="suggestion-title">إطلالة رسمية للعمل</h3>
+                    <p class="suggestion-description">تصميم أنيق ورسمي مناسب للاجتماعات والفعاليات المهنية</p>
+                    <div class="suggestion-meta">
+                        <span class="suggestion-weather"><i class="fas fa-building"></i> الأماكن المغلقة</span>
+                    </div>
+                    <div class="suggestion-actions">
+                        <button class="btn btn-primary btn-sm" onclick="saveOutfit(2)">
+                            <i class="fas fa-save"></i> حفظ
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="showSimilar(2)">
+                            <i class="fas fa-search"></i> مشابه
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Outfit Suggestion 3 -->
+            <div class="suggestion-card">
+                <div class="suggestion-image">
+                    <img src="https://images.pexels.com/photos/1176618/pexels-photo-1176618.jpeg?auto=compress&cs=tinysrgb&w=600" alt="إطلالة رياضية">
+                </div>
+                <div class="suggestion-details">
+                    <h3 class="suggestion-title">إطلالة رياضية</h3>
+                    <p class="suggestion-description">ملابس مريحة للتمارين والأنشطة الرياضية الخارجية</p>
+                    <div class="suggestion-meta">
+                        <span class="suggestion-weather"><i class="fas fa-running"></i> النشاطات الخارجية</span>
+                    </div>
+                    <div class="suggestion-actions">
+                        <button class="btn btn-primary btn-sm" onclick="saveOutfit(3)">
+                            <i class="fas fa-save"></i> حفظ
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="showSimilar(3)">
+                            <i class="fas fa-search"></i> مشابه
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Style Suggestions Section (Hidden by Default) -->
+    <section id="style-section" class="suggestions-section" style="display: none;">
+        <h2 class="section-heading">أنماط الملابس</h2>
+        
+        <div class="style-cards">
+            <!-- Style Card 1 -->
+            <div class="style-card">
+                <div class="style-image">
+                    <img src="https://images.pexels.com/photos/3671083/pexels-photo-3671083.jpeg?auto=compress&cs=tinysrgb&w=600" alt="نمط عصري">
+                </div>
+                <div class="style-content">
+                    <h3 class="style-title">عصري (Casual)</h3>
+                    <p class="style-description">تصاميم بسيطة وعملية مناسبة للحياة اليومية</p>
+                </div>
+                <div class="style-footer">
+                    <button class="btn btn-primary btn-block" onclick="exploreStyle('casual')">
+                        استكشاف النمط
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Style Card 2 -->
+            <div class="style-card">
+                <div class="style-image">
+                    <img src="https://images.pexels.com/photos/937481/pexels-photo-937481.jpeg?auto=compress&cs=tinysrgb&w=600" alt="نمط رسمي">
+                </div>
+                <div class="style-content">
+                    <h3 class="style-title">رسمي (Formal)</h3>
+                    <p class="style-description">أناقة وتصاميم راقية مناسبة للمناسبات الرسمية</p>
+                </div>
+                <div class="style-footer">
+                    <button class="btn btn-primary btn-block" onclick="exploreStyle('formal')">
+                        استكشاف النمط
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Style Card 3 -->
+            <div class="style-card">
+                <div class="style-image">
+                    <img src="https://images.pexels.com/photos/322207/pexels-photo-322207.jpeg?auto=compress&cs=tinysrgb&w=600" alt="نمط رياضي">
+                </div>
+                <div class="style-content">
+                    <h3 class="style-title">رياضي (Sport)</h3>
+                    <p class="style-description">ملابس مريحة وعملية للأنشطة الرياضية والحركة</p>
+                </div>
+                <div class="style-footer">
+                    <button class="btn btn-primary btn-block" onclick="exploreStyle('sport')">
+                        استكشاف النمط
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Occasion Suggestions Section (Hidden by Default) -->
+    <section id="occasion-section" class="suggestions-section" style="display: none;">
+        <h2 class="section-heading">مناسبات</h2>
+        
+        <div class="occasion-list">
+            <!-- Occasion Item 1 -->
+            <div class="occasion-item">
+                <div class="occasion-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="occasion-content">
+                    <h3 class="occasion-title">العمل والمكتب</h3>
+                    <p class="occasion-description">إطلالات مناسبة لبيئة العمل الرسمية وغير الرسمية</p>
+                </div>
+                <div class="occasion-action">
+                    <button class="btn btn-primary" onclick="showOccasionOutfits('work')">
+                        عرض الإطلالات
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Occasion Item 2 -->
+            <div class="occasion-item">
+                <div class="occasion-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="occasion-content">
+                    <h3 class="occasion-title">الجامعة والدراسة</h3>
+                    <p class="occasion-description">إطلالات عملية ومريحة مناسبة للبيئة التعليمية</p>
+                </div>
+                <div class="occasion-action">
+                    <button class="btn btn-primary" onclick="showOccasionOutfits('education')">
+                        عرض الإطلالات
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Occasion Item 3 -->
+            <div class="occasion-item">
+                <div class="occasion-icon">
+                    <i class="fas fa-glass-cheers"></i>
+                </div>
+                <div class="occasion-content">
+                    <h3 class="occasion-title">الحفلات والمناسبات</h3>
+                    <p class="occasion-description">إطلالات رسمية وأنيقة للمناسبات الخاصة والحفلات</p>
+                </div>
+                <div class="occasion-action">
+                    <button class="btn btn-primary" onclick="showOccasionOutfits('party')">
+                        عرض الإطلالات
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Occasion Item 4 -->
+            <div class="occasion-item">
+                <div class="occasion-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="occasion-content">
+                    <h3 class="occasion-title">العشاء والمطاعم</h3>
+                    <p class="occasion-description">إطلالات أنيقة للعشاء والخروج مع الأصدقاء والعائلة</p>
+                </div>
+                <div class="occasion-action">
+                    <button class="btn btn-primary" onclick="showOccasionOutfits('dinner')">
+                        عرض الإطلالات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Outfit Detail Modal -->
+<div class="modal-overlay" id="outfit-detail-modal" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title" id="outfit-modal-title">تفاصيل الإطلالة</h3>
+            <button class="modal-close" onclick="closeModal('outfit-detail-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="outfit-details-container">
+                <div class="outfit-image-gallery">
+                    <img id="outfit-modal-image" src="" alt="صورة الإطلالة" class="outfit-detail-image">
+                </div>
+                
+                <div class="outfit-pieces">
+                    <h4>القطع المقترحة:</h4>
+                    <ul id="outfit-pieces-list">
+                        <!-- Will be filled dynamically -->
+                    </ul>
+                </div>
+                
+                <div class="outfit-actions">
+                    <button class="btn btn-primary btn-block" onclick="saveOutfitFromModal()">
+                        <i class="fas fa-save"></i> حفظ الإطلالة
+                    </button>
+                    <button class="btn btn-secondary btn-block" style="margin-top: 10px;" onclick="findSimilarProducts()">
+                        <i class="fas fa-shopping-bag"></i> تسوق قطع مشابهة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/suggestions.js') }}"></script>
+{% endblock %}

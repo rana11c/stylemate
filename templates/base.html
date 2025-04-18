@@ -25,12 +25,92 @@
         </div>
         
         <div class="header-right">
-            <a href="#" class="header-icon">
+            <!-- Notifications Icon -->
+            <a href="#" class="header-icon" id="notifications-icon">
                 <i class="far fa-bell"></i>
             </a>
-            <a href="#" class="header-icon">
+            
+            <!-- Notifications Popup -->
+            <div class="header-popup" id="notifications-popup">
+                <div class="popup-header">التنبيهات</div>
+                <div class="popup-list">
+                    <div class="popup-item">
+                        <div class="popup-item-icon">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <div class="popup-item-content">
+                            <div class="popup-item-title">عروض جديدة</div>
+                            <div class="popup-item-subtitle">خصم 20% على المنتجات الجديدة</div>
+                        </div>
+                    </div>
+                    <div class="popup-item">
+                        <div class="popup-item-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <div class="popup-item-content">
+                            <div class="popup-item-title">تم إضافة منتجات جديدة</div>
+                            <div class="popup-item-subtitle">تصفح أحدث منتجات الموسم</div>
+                        </div>
+                    </div>
+                    <div class="popup-item">
+                        <div class="popup-item-icon">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <div class="popup-item-content">
+                            <div class="popup-item-title">تغير الطقس</div>
+                            <div class="popup-item-subtitle">إطلالة جديدة مناسبة للطقس</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-footer">
+                    <a href="#">عرض كل التنبيهات</a>
+                </div>
+            </div>
+            
+            <!-- Menu Icon -->
+            <a href="#" class="header-icon" id="menu-icon">
                 <i class="fas fa-ellipsis-v"></i>
             </a>
+            
+            <!-- Menu Popup -->
+            <div class="header-popup" id="menu-popup">
+                <div class="popup-list">
+                    <div class="popup-item">
+                        <div class="popup-item-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="popup-item-content">
+                            <div class="popup-item-title">الإعدادات</div>
+                        </div>
+                    </div>
+                    <div class="popup-item">
+                        <div class="popup-item-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="popup-item-content">
+                            <div class="popup-item-title">المساعدة والدعم</div>
+                        </div>
+                    </div>
+                    <div class="popup-item">
+                        <div class="popup-item-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="popup-item-content">
+                            <div class="popup-item-title">تقييم التطبيق</div>
+                        </div>
+                    </div>
+                    {% if current_user.is_authenticated %}
+                    <div class="popup-item" onclick="location.href='{{ url_for('logout') }}'">
+                        <div class="popup-item-icon">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </div>
+                        <div class="popup-item-content">
+                            <div class="popup-item-title">تسجيل الخروج</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </header>
     
@@ -61,7 +141,7 @@
             <i class="fas fa-tshirt nav-icon"></i>
             <span class="nav-label">ملابس</span>
         </a>
-        <a href="#" class="nav-item" data-target="suggestions">
+        <a href="{{ url_for('suggestions') }}" class="nav-item" data-target="suggestions">
             <i class="fas fa-lightbulb nav-icon"></i>
             <span class="nav-label">اقتراحات</span>
         </a>
