@@ -357,12 +357,311 @@ function initHeaderPopups() {
                     popup.classList.remove('active');
                 }
                 
-                // Show feedback
-                const itemTitle = this.querySelector('.popup-item-title');
-                if (itemTitle) {
-                    showFlashMessage(`تم النقر على "${itemTitle.textContent}"`);
+                // Get the action type from data attribute
+                const actionType = this.getAttribute('data-action');
+                
+                // Handle different action types
+                if (actionType === 'logout') {
+                    // Redirect to logout
+                    window.location.href = '/logout';
+                } else if (actionType === 'settings') {
+                    // Open settings modal
+                    openAccountSettingsModal();
+                } else if (actionType === 'notifications') {
+                    // Toggle notifications settings
+                    toggleNotificationSettings();
+                } else if (actionType === 'support') {
+                    // Open support chat
+                    openSupportChat();
+                } else if (actionType === 'language') {
+                    // Toggle language
+                    toggleLanguage();
+                } else {
+                    // Default behavior - show feedback
+                    const itemTitle = this.querySelector('.popup-item-title');
+                    if (itemTitle) {
+                        showFlashMessage(`تم النقر على "${itemTitle.textContent}"`);
+                    }
                 }
             });
         }
     });
+    
+    // Add actions for specific menu items by ID
+    const logoutItem = document.getElementById('logout-item');
+    if (logoutItem) {
+        logoutItem.setAttribute('data-action', 'logout');
+    }
+    
+    const settingsItem = document.getElementById('settings-item');
+    if (settingsItem) {
+        settingsItem.setAttribute('data-action', 'settings');
+    }
+    
+    const notificationsItem = document.getElementById('notifications-settings-item');
+    if (notificationsItem) {
+        notificationsItem.setAttribute('data-action', 'notifications');
+    }
+    
+    const supportItem = document.getElementById('support-item');
+    if (supportItem) {
+        supportItem.setAttribute('data-action', 'support');
+    }
+    
+    const languageItem = document.getElementById('language-item');
+    if (languageItem) {
+        languageItem.setAttribute('data-action', 'language');
+    }
+}
+
+// Account settings modal
+function openAccountSettingsModal() {
+    // Check if modal exists
+    let modal = document.getElementById('account-settings-modal');
+    
+    // Create modal if it doesn't exist
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'account-settings-modal';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h2>إعدادات الحساب</h2>
+                    <button class="modal-close"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-content">
+                    <div class="settings-section">
+                        <h3>المعلومات الشخصية</h3>
+                        <form id="profile-form">
+                            <div class="form-group">
+                                <label for="display-name">الاسم</label>
+                                <input type="text" id="display-name" value="مستخدم ستايلر" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="user-email">البريد الإلكتروني</label>
+                                <input type="email" id="user-email" value="user@example.com" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="user-phone">رقم الهاتف</label>
+                                <input type="tel" id="user-phone" value="+966 5xxxxxxxx" class="form-control">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="settings-section">
+                        <h3>تغيير كلمة المرور</h3>
+                        <form id="password-form">
+                            <div class="form-group">
+                                <label for="current-password">كلمة المرور الحالية</label>
+                                <input type="password" id="current-password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">كلمة المرور الجديدة</label>
+                                <input type="password" id="new-password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-password">تأكيد كلمة المرور</label>
+                                <input type="password" id="confirm-password" class="form-control">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="settings-section">
+                        <h3>إعدادات الإشعارات</h3>
+                        <div class="settings-option">
+                            <label for="email-notifications">إشعارات البريد الإلكتروني</label>
+                            <label class="switch">
+                                <input type="checkbox" id="email-notifications" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="settings-option">
+                            <label for="push-notifications">إشعارات الموقع</label>
+                            <label class="switch">
+                                <input type="checkbox" id="push-notifications" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('account-settings-modal')">إلغاء</button>
+                    <button class="btn btn-primary" onclick="saveAccountSettings()">حفظ التغييرات</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Add event listener to close button
+        const closeButton = modal.querySelector('.modal-close');
+        if (closeButton) {
+            closeButton.addEventListener('click', function() {
+                closeModal('account-settings-modal');
+            });
+        }
+    }
+    
+    // Open the modal
+    openModal('account-settings-modal');
+}
+
+// Save account settings
+function saveAccountSettings() {
+    // Get form values
+    const displayName = document.getElementById('display-name').value;
+    const email = document.getElementById('user-email').value;
+    const phone = document.getElementById('user-phone').value;
+    
+    // Validate current password if changing password
+    const currentPassword = document.getElementById('current-password').value;
+    const newPassword = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+    
+    if (newPassword || confirmPassword) {
+        if (!currentPassword) {
+            showFlashMessage('يرجى إدخال كلمة المرور الحالية', 'error');
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            showFlashMessage('كلمة المرور الجديدة غير متطابقة', 'error');
+            return;
+        }
+    }
+    
+    // In a real app, this would send data to the server
+    // For demo, we'll just show success message
+    showFlashMessage('تم حفظ التغييرات بنجاح');
+    closeModal('account-settings-modal');
+}
+
+// Toggle notification settings
+function toggleNotificationSettings() {
+    openAccountSettingsModal();
+    
+    // Scroll to notifications section
+    setTimeout(() => {
+        const notificationsSection = document.querySelector('.settings-section:nth-child(3)');
+        if (notificationsSection) {
+            notificationsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, 100);
+}
+
+// Open support chat
+function openSupportChat() {
+    // Check if chat modal exists
+    let modal = document.getElementById('support-chat-modal');
+    
+    if (!modal) {
+        // Create chat modal
+        modal = document.createElement('div');
+        modal.id = 'support-chat-modal';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-container chat-container">
+                <div class="modal-header">
+                    <h2>الدعم الفني</h2>
+                    <button class="modal-close"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-content chat-content">
+                    <div class="chat-messages">
+                        <div class="chat-message agent">
+                            <div class="message-content">
+                                <p>مرحباً بك في الدعم الفني! كيف يمكنني مساعدتك اليوم؟</p>
+                            </div>
+                            <div class="message-time">10:30</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer chat-input">
+                    <input type="text" placeholder="اكتب رسالتك هنا..." id="chat-input">
+                    <button class="btn btn-primary" onclick="sendChatMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Add event listener to close button
+        const closeButton = modal.querySelector('.modal-close');
+        if (closeButton) {
+            closeButton.addEventListener('click', function() {
+                closeModal('support-chat-modal');
+            });
+        }
+        
+        // Add event listener for Enter key
+        const chatInput = modal.querySelector('#chat-input');
+        if (chatInput) {
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+        }
+    }
+    
+    // Open the modal
+    openModal('support-chat-modal');
+}
+
+// Send chat message
+function sendChatMessage() {
+    const chatInput = document.getElementById('chat-input');
+    if (!chatInput || !chatInput.value.trim()) return;
+    
+    const messageText = chatInput.value.trim();
+    const messagesContainer = document.querySelector('.chat-messages');
+    
+    // Create user message
+    const messageElement = document.createElement('div');
+    messageElement.className = 'chat-message user';
+    
+    // Get current time
+    const now = new Date();
+    const timeString = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+    
+    messageElement.innerHTML = `
+        <div class="message-content">
+            <p>${messageText}</p>
+        </div>
+        <div class="message-time">${timeString}</div>
+    `;
+    
+    // Add to messages container
+    messagesContainer.appendChild(messageElement);
+    
+    // Clear input
+    chatInput.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // In a real app, this would send the message to the server
+    // For demo, simulate response after delay
+    setTimeout(() => {
+        // Create agent message
+        const responseElement = document.createElement('div');
+        responseElement.className = 'chat-message agent';
+        
+        responseElement.innerHTML = `
+            <div class="message-content">
+                <p>شكراً لتواصلك معنا. سيتم الرد على استفسارك في أقرب وقت ممكن.</p>
+            </div>
+            <div class="message-time">${timeString}</div>
+        `;
+        
+        // Add to messages container
+        messagesContainer.appendChild(responseElement);
+        
+        // Scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 1000);
+}
+
+// Toggle language
+function toggleLanguage() {
+    // In a real app, this would toggle between available languages
+    showFlashMessage('سيتم دعم اللغة الإنجليزية قريباً');
 }
