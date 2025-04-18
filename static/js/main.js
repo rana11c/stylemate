@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize current date
     updateCurrentDate();
     
+    // Initialize header popups (notifications and menu)
+    initHeaderPopups();
+    
     // Initialize demo data (for demonstration purposes)
     initializeDemoData();
 });
@@ -289,4 +292,77 @@ function performSearch(query) {
         // Redirect to shopping page with search query
         window.location.href = `/shopping?q=${encodeURIComponent(query)}`;
     }, 500);
+}
+
+// Initialize header popup functionality (notifications and menu)
+function initHeaderPopups() {
+    // Notifications popup
+    const notificationsIcon = document.getElementById('notifications-icon');
+    const notificationsPopup = document.getElementById('notifications-popup');
+    
+    if (notificationsIcon && notificationsPopup) {
+        notificationsIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Close menu popup if open
+            const menuPopup = document.getElementById('menu-popup');
+            if (menuPopup) {
+                menuPopup.classList.remove('active');
+            }
+            
+            // Toggle notifications popup
+            notificationsPopup.classList.toggle('active');
+        });
+    }
+    
+    // Menu popup
+    const menuIcon = document.getElementById('menu-icon');
+    const menuPopup = document.getElementById('menu-popup');
+    
+    if (menuIcon && menuPopup) {
+        menuIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Close notifications popup if open
+            if (notificationsPopup) {
+                notificationsPopup.classList.remove('active');
+            }
+            
+            // Toggle menu popup
+            menuPopup.classList.toggle('active');
+        });
+    }
+    
+    // Close popups when clicking outside
+    document.addEventListener('click', function(e) {
+        if (notificationsPopup && !notificationsPopup.contains(e.target) && e.target !== notificationsIcon) {
+            notificationsPopup.classList.remove('active');
+        }
+        
+        if (menuPopup && !menuPopup.contains(e.target) && e.target !== menuIcon) {
+            menuPopup.classList.remove('active');
+        }
+    });
+    
+    // Make popup items clickable
+    const popupItems = document.querySelectorAll('.popup-item');
+    popupItems.forEach(item => {
+        if (!item.hasAttribute('onclick')) {
+            item.addEventListener('click', function() {
+                // Handle menu item click - default is to close popup
+                const popup = this.closest('.header-popup');
+                if (popup) {
+                    popup.classList.remove('active');
+                }
+                
+                // Show feedback
+                const itemTitle = this.querySelector('.popup-item-title');
+                if (itemTitle) {
+                    showFlashMessage(`تم النقر على "${itemTitle.textContent}"`);
+                }
+            });
+        }
+    });
 }

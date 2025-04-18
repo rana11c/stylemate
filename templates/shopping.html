@@ -242,14 +242,59 @@
                     <textarea id="checkout-address" name="address" required placeholder="أدخل عنوان التوصيل" rows="3"></textarea>
                 </div>
                 
-                <div class="form-group">
-                    <label for="checkout-payment" class="form-label">طريقة الدفع</label>
-                    <select id="checkout-payment" name="payment" required>
-                        <option value="">اختر طريقة الدفع</option>
-                        <option value="credit_card">بطاقة ائتمان</option>
-                        <option value="cash_on_delivery">الدفع عند الاستلام</option>
-                        <option value="bank_transfer">تحويل بنكي</option>
-                    </select>
+                <!-- Payment Methods -->
+                <div class="payment-methods">
+                    <h4>طريقة الدفع</h4>
+                    
+                    <div class="payment-method-tabs">
+                        <div class="payment-method-tab active" data-target="card-payment">
+                            <i class="fas fa-credit-card"></i> بطاقة ائتمان
+                        </div>
+                        <div class="payment-method-tab" data-target="cash-payment">
+                            <i class="fas fa-money-bill-wave"></i> الدفع عند الاستلام
+                        </div>
+                    </div>
+                    
+                    <!-- Credit Card Payment Form -->
+                    <div class="payment-method-content active" id="card-payment">
+                        <div class="card-form">
+                            <div class="card-form-row">
+                                <div class="card-form-group">
+                                    <label for="card-number" class="card-input-label">رقم البطاقة</label>
+                                    <div class="card-input-icon">
+                                        <input type="text" id="card-number" class="card-input" placeholder="0000 0000 0000 0000" maxlength="19">
+                                        <i class="fab fa-cc-visa"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-form-row">
+                                <div class="card-form-group">
+                                    <label for="card-name" class="card-input-label">الاسم على البطاقة</label>
+                                    <input type="text" id="card-name" class="card-input" placeholder="الاسم كما يظهر على البطاقة">
+                                </div>
+                            </div>
+                            
+                            <div class="card-form-row">
+                                <div class="card-form-group">
+                                    <label for="card-expiry" class="card-input-label">تاريخ الانتهاء</label>
+                                    <input type="text" id="card-expiry" class="card-input" placeholder="MM/YY" maxlength="5">
+                                </div>
+                                <div class="card-form-group">
+                                    <label for="card-cvc" class="card-input-label">رمز الأمان (CVC)</label>
+                                    <input type="text" id="card-cvc" class="card-input" placeholder="000" maxlength="3">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cash on Delivery -->
+                    <div class="payment-method-content" id="cash-payment">
+                        <div class="cash-payment-info">
+                            <p>سيتم الدفع نقداً عند استلام الطلب.</p>
+                            <p>يرجى التأكد من وجود المبلغ المطلوب عند التوصيل.</p>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="order-summary">

@@ -337,6 +337,7 @@ def initialize_demo_data():
     # Only initialize if no products exist
     if Product.query.count() == 0:
         products = [
+            # قمصان
             {
                 'name': 'قميص كلاسيكي أزرق',
                 'category': 'tops',
@@ -345,12 +346,21 @@ def initialize_demo_data():
                 'description': 'قميص كلاسيكي أزرق مناسب للمناسبات الرسمية'
             },
             {
-                'name': 'بنطال كلاسيكي بيج',
-                'category': 'bottoms',
-                'price': 349,
-                'image_url': 'https://images.pexels.com/photos/4210866/pexels-photo-4210866.jpeg?auto=compress&cs=tinysrgb&w=600',
-                'description': 'بنطال كلاسيكي بيج مناسب للمناسبات الرسمية والعمل'
+                'name': 'قميص أبيض',
+                'category': 'tops',
+                'price': 279,
+                'image_url': 'https://images.pexels.com/photos/769749/pexels-photo-769749.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'قميص أبيض نقي بتصميم كلاسيكي مناسب لجميع المناسبات'
             },
+            {
+                'name': 'قميص كاروهات',
+                'category': 'tops',
+                'price': 249,
+                'image_url': 'https://images.pexels.com/photos/6626903/pexels-photo-6626903.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'قميص بنقشة الكاروهات مناسب للإطلالات الكاجوال'
+            },
+            
+            # تيشيرتات 
             {
                 'name': 'تيشيرت أسود',
                 'category': 'tops',
@@ -359,6 +369,52 @@ def initialize_demo_data():
                 'description': 'تيشيرت أسود بتصميم بسيط مناسب للإطلالة اليومية'
             },
             {
+                'name': 'تيشيرت أبيض',
+                'category': 'tops',
+                'price': 150,
+                'image_url': 'https://images.pexels.com/photos/5384423/pexels-photo-5384423.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'تيشيرت أبيض قطني بقصة مريحة للإطلالات اليومية'
+            },
+            {
+                'name': 'تيشيرت بولو أزرق',
+                'category': 'tops',
+                'price': 199,
+                'image_url': 'https://images.pexels.com/photos/6311387/pexels-photo-6311387.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'تيشيرت بولو بلون أزرق مميز للإطلالات شبه الرسمية'
+            },
+            
+            # بناطيل
+            {
+                'name': 'بنطال كلاسيكي بيج',
+                'category': 'bottoms',
+                'price': 349,
+                'image_url': 'https://images.pexels.com/photos/4210866/pexels-photo-4210866.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'بنطال كلاسيكي بيج مناسب للمناسبات الرسمية والعمل'
+            },
+            {
+                'name': 'بنطال جينز أزرق',
+                'category': 'bottoms',
+                'price': 320,
+                'image_url': 'https://images.pexels.com/photos/4252950/pexels-photo-4252950.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'بنطال جينز بلون أزرق كلاسيكي وقصة مريحة'
+            },
+            {
+                'name': 'بنطال رياضي رمادي',
+                'category': 'bottoms',
+                'price': 180,
+                'image_url': 'https://images.pexels.com/photos/6311652/pexels-photo-6311652.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'بنطال رياضي بلون رمادي مناسب للأنشطة الرياضية والراحة'
+            },
+            {
+                'name': 'بنطال كلاسيكي أسود',
+                'category': 'bottoms',
+                'price': 349,
+                'image_url': 'https://images.pexels.com/photos/6764036/pexels-photo-6764036.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'بنطال كلاسيكي أسود أنيق مناسب للمناسبات الرسمية'
+            },
+            
+            # ملابس خارجية
+            {
                 'name': 'جاكيت جينز',
                 'category': 'outerwear',
                 'price': 450,
@@ -366,11 +422,78 @@ def initialize_demo_data():
                 'description': 'جاكيت جينز مناسب للطقس المعتدل'
             },
             {
+                'name': 'جاكيت جلد أسود',
+                'category': 'outerwear',
+                'price': 750,
+                'image_url': 'https://images.pexels.com/photos/3866555/pexels-photo-3866555.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'جاكيت جلد أنيق باللون الأسود للإطلالة العصرية'
+            },
+            {
+                'name': 'بليزر رمادي',
+                'category': 'outerwear',
+                'price': 550,
+                'image_url': 'https://images.pexels.com/photos/6626878/pexels-photo-6626878.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'بليزر رمادي أنيق مناسب للمناسبات الرسمية والعمل'
+            },
+            {
+                'name': 'معطف طويل',
+                'category': 'outerwear',
+                'price': 850,
+                'image_url': 'https://images.pexels.com/photos/1220757/pexels-photo-1220757.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'معطف طويل أنيق مناسب للطقس البارد والمظهر الرسمي'
+            },
+            
+            # أحذية
+            {
                 'name': 'حذاء رياضي أبيض',
                 'category': 'shoes',
                 'price': 399,
                 'image_url': 'https://images.pexels.com/photos/19090/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=600',
                 'description': 'حذاء رياضي أبيض مريح للاستخدام اليومي'
+            },
+            {
+                'name': 'حذاء كلاسيكي أسود',
+                'category': 'shoes',
+                'price': 499,
+                'image_url': 'https://images.pexels.com/photos/267202/pexels-photo-267202.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'حذاء كلاسيكي جلد أنيق مناسب للمناسبات الرسمية'
+            },
+            {
+                'name': 'حذاء كاجوال بني',
+                'category': 'shoes',
+                'price': 450,
+                'image_url': 'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'حذاء كاجوال بني بتصميم أنيق يناسب الإطلالات اليومية'
+            },
+            {
+                'name': 'حذاء رياضي أسود',
+                'category': 'shoes',
+                'price': 420,
+                'image_url': 'https://images.pexels.com/photos/2421374/pexels-photo-2421374.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'حذاء رياضي أسود مريح للرياضة والإطلالات العصرية'
+            },
+            
+            # إكسسوارات
+            {
+                'name': 'ساعة يد كلاسيكية',
+                'category': 'accessories',
+                'price': 650,
+                'image_url': 'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'ساعة يد كلاسيكية بحزام جلدي تناسب جميع المناسبات'
+            },
+            {
+                'name': 'نظارة شمسية',
+                'category': 'accessories',
+                'price': 320,
+                'image_url': 'https://images.pexels.com/photos/701877/pexels-photo-701877.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'نظارة شمسية بإطار أسود أنيق للوقاية من الشمس وإكمال إطلالتك'
+            },
+            {
+                'name': 'حزام جلد بني',
+                'category': 'accessories',
+                'price': 220,
+                'image_url': 'https://images.pexels.com/photos/45055/pexels-photo-45055.jpeg?auto=compress&cs=tinysrgb&w=600',
+                'description': 'حزام جلد بني أنيق مناسب للإطلالات الرسمية واليومية'
             }
         ]
         
