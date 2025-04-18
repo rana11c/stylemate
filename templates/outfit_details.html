@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <a href="{{ url_for('index') }}" class="back-link">
+            <i class="fas fa-chevron-right"></i> العودة
+        </a>
+        <h1 class="page-title">تفاصيل الإطلالة</h1>
+    </div>
+    
+    <div class="outfit-detail-card">
+        <div class="outfit-header">
+            <h2 class="outfit-name">{{ outfit.name }}</h2>
+            
+            <div class="outfit-actions">
+                <button class="outfit-action-btn" onclick="openDeleteConfirmation({{ outfit.id }})">
+                    <i class="fas fa-trash"></i> حذف
+                </button>
+            </div>
+        </div>
+        
+        {% if outfit.weather_condition or outfit.weather_temp %}
+        <div class="outfit-weather-info">
+            {% if outfit.weather_condition %}
+            <div class="weather-condition-badge">
+                <i class="fas fa-cloud"></i> {{ outfit.weather_condition }}
+            </div>
+            {% endif %}
+            
+            {% if outfit.weather_temp %}
+            <div class="weather-temp-badge">
+                <i class="fas fa-temperature-high"></i> {{ outfit.weather_temp }}°
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <div class="outfit-items-container">
+            <h3 class="section-title">قطع الملابس</h3>
+            
+            <div class="outfit-items-grid">
+                {% if outfit.items.count() > 0 %}
+                    {% for item in outfit.items %}
+                    <div class="outfit-item">
+                        {% set closet_item = closet_item_map.get(item.closet_item_id) %}
+                        {% if closet_item %}
+                            <img src="{{ closet_item.image_url }}" alt="{{ closet_item.name }}">
+                            <div class="outfit-item-category">{{ closet_item.category }}</div>
+                        {% else %}
+                            <div class="item-unavailable">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                قطعة غير متوفرة
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <p>لا توجد قطع ملابس مضافة لهذه الإطلالة</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if outfit.notes %}
+        <div class="outfit-notes">
+            <h3 class="section-title">ملاحظات</h3>
+            <p>{{ outfit.notes }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="delete-confirmation-modal" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">تأكيد الحذف</h3>
+            <button class="modal-close" onclick="closeModal('delete-confirmation-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <p class="confirmation-message">هل أنت متأكد من حذف هذه الإطلالة؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            
+            <form id="delete-outfit-form" method="post" action="{{ url_for('delete_outfit', outfit_id=outfit.id) }}">
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('delete-confirmation-modal')">إلغاء</button>
+                    <button type="submit" class="btn btn-danger">حذف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openDeleteConfirmation(outfitId) {
+        openModal('delete-confirmation-modal');
+    }
+    
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+    
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

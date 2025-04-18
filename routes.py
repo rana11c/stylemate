@@ -161,20 +161,151 @@ def toggle_favorite():
         db.session.commit()
         return jsonify({'status': 'added'})
 
-# Outfit recommendations
-@app.route('/recommendations')
+# Outfit management
+@app.route('/outfit/add', methods=['POST'])
 @login_required
-def recommendations():
-    weather_data = get_weather_forecast()
+def add_outfit():
+    name = request.form.get('name')
+    weather_condition = request.form.get('weather_condition')
+    weather_temp = float(request.form.get('weather_temp', 25))
+    notes = request.form.get('notes', '')
     
-    # Get AI-powered outfit recommendations
-    recommendations = get_outfit_recommendations(
+    # Get selected items
+    items = request.form.getlist('items')
+    
+    if not items:
+        flash('يرجى اختيار قطعة ملابس واحدة على الأقل', 'error')
+        return redirect(url_for('index'))
+    
+    # Create new outfit
+    new_outfit = Outfit(
+        name=name,
         user_id=current_user.id,
-        temperature=weather_data['today']['temp'],
-        weather_condition=weather_data['today']['condition']
+        weather_condition=weather_condition,
+        weather_temp=weather_temp,
+        notes=notes
     )
     
-    return jsonify(recommendations)
+    db.session.add(new_outfit)
+    db.session.commit()
+    
+    # Add outfit items
+    for item_id in items:
+        outfit_item = OutfitItem(
+            outfit_id=new_outfit.id,
+            closet_item_id=item_id
+        )
+        db.session.add(outfit_item)
+    
+    db.session.commit()
+    
+    flash('تمت إضافة الإطلالة بنجاح!', 'success')
+    return redirect(url_for('index'))
+
+@app.route('/outfit/<int:outfit_id>')
+@login_required
+def view_outfit(outfit_id):
+    outfit = Outfit.query.get_or_404(outfit_id)
+    
+    # Check if outfit belongs to current user
+    if outfit.user_id != current_user.id:
+        flash('غير مصرح بالوصول إلى هذه الإطلالة', 'error')
+        return redirect(url_for('index'))
+    
+    # Create a mapping of closet item IDs to objects for easy lookup in the template
+    closet_item_map = {}
+    for outfit_item in outfit.items:
+        closet_item = ClosetItem.query.get(outfit_item.closet_item_id)
+        if closet_item:
+            closet_item_map[outfit_item.closet_item_id] = closet_item
+    
+    return render_template('outfit_details.html', outfit=outfit, closet_item_map=closet_item_map)
+
+@app.route('/outfit/delete/<int:outfit_id>', methods=['POST'])
+@login_required
+def delete_outfit(outfit_id):
+    outfit = Outfit.query.get_or_404(outfit_id)
+    
+    # Check if outfit belongs to current user
+    if outfit.user_id != current_user.id:
+        flash('غير مصرح بحذف هذه الإطلالة', 'error')
+        return redirect(url_for('index'))
+    
+    # Delete outfit items first
+    OutfitItem.query.filter_by(outfit_id=outfit.id).delete()
+    
+    # Delete outfit
+    db.session.delete(outfit)
+    db.session.commit()
+    
+    flash('تم حذف الإطلالة بنجاح', 'success')
+    return redirect(url_for('index'))
+
+@app.route('/outfit/daily')
+@login_required
+def daily_outfit():
+    """Get daily outfit recommendation based on weather"""
+    weather_data = get_weather_forecast()
+    current_temp = weather_data['today']['temp']
+    current_condition = weather_data['today']['condition']
+    
+    # Try to find matching outfit from user's outfits
+    matching_outfits = Outfit.query.filter_by(user_id=current_user.id).all()
+    
+    # Filter by condition and temperature
+    suitable_outfits = []
+    for outfit in matching_outfits:
+        # Match by condition (if provided)
+        condition_match = True
+        if outfit.weather_condition and outfit.weather_condition != current_condition:
+            # Simple exact match for now
+            condition_match = False
+        
+        # Match by temperature (within 5 degrees)
+        temp_match = True
+        if outfit.weather_temp:
+            temp_diff = abs(outfit.weather_temp - current_temp)
+            if temp_diff > 5:  # Within 5 degrees
+                temp_match = False
+        
+        if condition_match and temp_match:
+            suitable_outfits.append(outfit)
+    
+    if suitable_outfits:
+        # Return the newest suitable outfit
+        outfit = max(suitable_outfits, key=lambda o: o.created_at)
+        
+        # Format the response
+        items = []
+        for outfit_item in outfit.items:
+            closet_item = ClosetItem.query.get(outfit_item.closet_item_id)
+            if closet_item:
+                items.append({
+                    'id': closet_item.id,
+                    'name': closet_item.name,
+                    'category': closet_item.category,
+                    'image_url': closet_item.image_url,
+                })
+        
+        response = {
+            'id': outfit.id,
+            'name': outfit.name,
+            'weather_condition': outfit.weather_condition,
+            'weather_temp': outfit.weather_temp,
+            'notes': outfit.notes,
+            'items': items
+        }
+        
+        return jsonify({'status': 'success', 'outfit': response})
+    
+    # If no suitable outfit found, get AI recommendations
+    recommendations = get_outfit_recommendations(
+        user_id=current_user.id,
+        temperature=current_temp,
+        weather_condition=current_condition
+    )
+    
+    return jsonify({'status': 'ai_generated', 'outfit': recommendations})
 
 # API endpoint for product recommendations
 @app.route('/api/product_recommendations')
@@ -205,21 +336,21 @@ def initialize_demo_data():
                 'name': 'قميص كلاسيكي أزرق',
                 'category': 'tops',
                 'price': 299,
-                'image_url': 'https://images.unsplash.com/photo-1525383666937-f1090096ca3a',
+                'image_url': 'https://images.pexels.com/photos/2294342/pexels-photo-2294342.jpeg?auto=compress&cs=tinysrgb&w=600',
                 'description': 'قميص كلاسيكي أزرق مناسب للمناسبات الرسمية'
             },
             {
                 'name': 'بنطال كلاسيكي بيج',
                 'category': 'bottoms',
                 'price': 349,
-                'image_url': 'https://images.unsplash.com/photo-1565191262855-2e6c531f3867',
+                'image_url': 'https://images.pexels.com/photos/4210866/pexels-photo-4210866.jpeg?auto=compress&cs=tinysrgb&w=600',
                 'description': 'بنطال كلاسيكي بيج مناسب للمناسبات الرسمية والعمل'
             },
             {
                 'name': 'تيشيرت أسود',
                 'category': 'tops',
                 'price': 150,
-                'image_url': 'https://images.unsplash.com/photo-1523194258983-4ef0203f0c47',
+                'image_url': 'https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=600',
                 'description': 'تيشيرت أسود بتصميم بسيط مناسب للإطلالة اليومية'
             },
             {

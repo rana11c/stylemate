@@ -13,11 +13,107 @@
     
     <!-- Outfit of the Day -->
     <section class="outfit-section">
-        <h2>إطلالة اليوم</h2>
+        <div class="section-header">
+            <h2>إطلالة اليوم</h2>
+            <button class="refresh-btn" onclick="reloadOutfit()">
+                <i class="fas fa-sync-alt"></i> تحديث
+            </button>
+        </div>
         
-        <div class="outfit-error">
-            <div>حدث خطأ أثناء تحميل الإطلالة</div>
-            <button class="outfit-reload" onclick="reloadOutfit()">إعادة المحاولة</button>
+        {% if current_user.is_authenticated %}
+            <div id="outfit-container" class="outfit-container">
+                <div class="outfit-error">
+                    <div>حدث خطأ أثناء تحميل الإطلالة</div>
+                    <button class="outfit-reload" onclick="reloadOutfit()">إعادة المحاولة</button>
+                </div>
+            </div>
+            
+            <!-- Upload Outfit Button -->
+            <button class="btn btn-primary add-outfit-btn" onclick="openUploadOutfitModal()">
+                <i class="fas fa-plus"></i> إضافة إطلالة
+            </button>
+        {% else %}
+            <div class="login-prompt">
+                <p>قم بتسجيل الدخول للحصول على توصيات مخصصة للإطلالات</p>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">تسجيل الدخول</a>
+            </div>
+        {% endif %}
+        
+        <!-- Outfit Upload Modal -->
+        <div class="modal-overlay" id="upload-outfit-modal" style="display: none;">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3 class="modal-title">إضافة إطلالة جديدة</h3>
+                    <button class="modal-close" onclick="closeModal('upload-outfit-modal')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="modal-body">
+                    <form id="upload-outfit-form" method="post" action="{{ url_for('add_outfit') }}" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="outfit-name" class="form-label">اسم الإطلالة</label>
+                            <input type="text" id="outfit-name" name="name" required placeholder="مثال: إطلالة العمل الرسمية">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">اختر من خزانتك</label>
+                            <div class="outfit-item-selector">
+                                {% if current_user.is_authenticated and current_user.closet_items.count() > 0 %}
+                                    <div class="outfit-items-grid">
+                                        {% for item in current_user.closet_items.all() %}
+                                        <div class="outfit-item-option">
+                                            <input type="checkbox" id="item-{{ item.id }}" name="items" value="{{ item.id }}" class="outfit-item-checkbox">
+                                            <label for="item-{{ item.id }}" class="outfit-item-label">
+                                                <img src="{{ item.image_url }}" alt="{{ item.name }}">
+                                                <span>{{ item.name }}</span>
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="empty-closet-message">
+                                        <p>لا توجد ملابس في خزانتك</p>
+                                        <a href="{{ url_for('closet') }}" class="btn btn-secondary">إضافة ملابس</a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="outfit-weather" class="form-label">مناسب للطقس</label>
+                            <select id="outfit-weather" name="weather_condition" required>
+                                <option value="">اختر حالة الطقس</option>
+                                <option value="sunny">مشمس</option>
+                                <option value="cloudy">غائم</option>
+                                <option value="rainy">ممطر</option>
+                                <option value="windy">عاصف</option>
+                                <option value="cold">بارد</option>
+                                <option value="hot">حار</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="outfit-temp" class="form-label">درجة الحرارة المناسبة</label>
+                            <div class="temperature-range">
+                                <span>بارد</span>
+                                <input type="range" id="outfit-temp" name="weather_temp" min="0" max="50" value="25">
+                                <span>حار</span>
+                            </div>
+                            <div class="temperature-value"><span id="temp-value">25</span>°</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="outfit-notes" class="form-label">ملاحظات</label>
+                            <textarea id="outfit-notes" name="notes" placeholder="ملاحظات إضافية عن الإطلالة" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-block">إضافة الإطلالة</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </section>
     
@@ -107,4 +203,5 @@
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/weather.js') }}"></script>
+<script src="{{ url_for('static', filename='js/outfit.js') }}"></script>
 {% endblock %}

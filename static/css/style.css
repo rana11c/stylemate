@@ -725,6 +725,42 @@ input:focus, select:focus, textarea:focus {
     margin: 20px 0;
 }
 
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.refresh-btn {
+    display: flex;
+    align-items: center;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    background: none;
+    border: 1px solid var(--primary-color);
+    border-radius: 6px;
+    padding: 6px 12px;
+    transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+    background-color: var(--primary-light);
+    color: white;
+}
+
+.refresh-btn i {
+    margin-left: 6px;
+}
+
+.outfit-container {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
 .outfit-error {
     background-color: var(--light-gray);
     color: var(--dark-gray);
@@ -741,6 +777,187 @@ input:focus, select:focus, textarea:focus {
     color: white;
     border-radius: 6px;
     font-weight: 600;
+}
+
+.login-prompt {
+    background-color: var(--light-gray);
+    padding: 30px;
+    text-align: center;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+.login-prompt p {
+    margin-bottom: 15px;
+    color: var(--dark-gray);
+}
+
+.add-outfit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+}
+
+.add-outfit-btn i {
+    margin-left: 8px;
+}
+
+/* Outfit Display */
+.outfit-display {
+    padding: 20px;
+}
+
+.outfit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.outfit-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.outfit-weather {
+    display: flex;
+    align-items: center;
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+}
+
+.outfit-weather i {
+    margin-left: 6px;
+    color: var(--primary-color);
+}
+
+.outfit-items-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.outfit-item {
+    position: relative;
+    aspect-ratio: 1/1;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+}
+
+.outfit-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.outfit-item-category {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 4px;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.outfit-notes {
+    background-color: var(--light-gray);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+}
+
+/* Outfit Upload Modal */
+.outfit-item-selector {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--light-gray);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+}
+
+.outfit-items-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.outfit-item-option {
+    position: relative;
+}
+
+.outfit-item-checkbox {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    z-index: 2;
+}
+
+.outfit-item-label {
+    display: block;
+    cursor: pointer;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.outfit-item-label:hover {
+    border-color: var(--primary-light);
+}
+
+.outfit-item-checkbox:checked + .outfit-item-label {
+    border-color: var(--primary-color);
+}
+
+.outfit-item-label img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+}
+
+.outfit-item-label span {
+    display: block;
+    padding: 6px;
+    font-size: 0.8rem;
+    text-align: center;
+    background-color: var(--light-gray);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.empty-closet-message {
+    text-align: center;
+    padding: 20px;
+}
+
+.temperature-range {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.temperature-range input {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.temperature-value {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
 }
 
 /* Forms */
