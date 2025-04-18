@@ -99,6 +99,11 @@ function initFlashMessages() {
 
 // Create and show a flash message
 function showFlashMessage(message, type = 'success') {
+    // Prevent potential recursion issues
+    if (window.isShowingFlashMessage) return;
+    
+    window.isShowingFlashMessage = true;
+    
     const flashContainer = document.querySelector('.flash-container') || createFlashContainer();
     
     const messageElement = document.createElement('div');
@@ -116,6 +121,11 @@ function showFlashMessage(message, type = 'success') {
             messageElement.remove();
         }, 300);
     }, 5000);
+    
+    // Reset flag
+    setTimeout(() => {
+        window.isShowingFlashMessage = false;
+    }, 100);
 }
 
 function createFlashContainer() {
@@ -260,16 +270,243 @@ function reloadOutfit() {
     
     outfitSection.innerHTML = loadingHtml;
     
-    // In a real app, this would fetch new recommendations from the server
-    setTimeout(() => {
-        // For demo, just show the error message again
-        outfitSection.innerHTML = `
-            <div class="outfit-error">
-                <div>حدث خطأ أثناء تحميل الإطلالة</div>
-                <button class="outfit-reload" onclick="reloadOutfit()">إعادة المحاولة</button>
-            </div>
-        `;
-    }, 1500);
+    // Get today's weather data
+    fetch('/api/weather')
+        .then(response => response.json())
+        .then(weatherData => {
+            const weatherCondition = weatherData.today.condition || 'sunny';
+            const temperature = weatherData.today.temp || 30;
+            
+            // Generate outfit based on weather
+            const outfit = generateWeatherBasedOutfit(weatherCondition, temperature);
+            
+            outfitSection.innerHTML = `
+                <div class="outfit-display">
+                    <div class="outfit-header">
+                        <div class="outfit-name">${outfit.name}</div>
+                        <div class="outfit-weather">
+                            <i class="fas ${getWeatherIcon(weatherCondition)}"></i>
+                            ${temperature}°
+                        </div>
+                    </div>
+                    
+                    <div class="outfit-items-grid">
+                        ${outfit.items.map(item => `
+                            <div class="outfit-item">
+                                <img src="${item.image}" alt="${item.name}">
+                                <div class="outfit-item-category">${item.category}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="outfit-notes">
+                        <p>${outfit.notes}</p>
+                    </div>
+                    
+                    <div class="outfit-actions">
+                        <button class="btn btn-primary" onclick="saveToMyOutfits()">
+                            <i class="fas fa-save"></i> حفظ في خزانتي
+                        </button>
+                        <button class="btn btn-secondary" onclick="findSimilarOutfits()">
+                            <i class="fas fa-search"></i> إطلالات مشابهة
+                        </button>
+                    </div>
+                </div>
+            `;
+        })
+        .catch(error => {
+            console.error('Error loading weather data:', error);
+            
+            // Fallback to show a generic outfit
+            const outfit = generateWeatherBasedOutfit('sunny', 30);
+            
+            outfitSection.innerHTML = `
+                <div class="outfit-display">
+                    <div class="outfit-header">
+                        <div class="outfit-name">${outfit.name}</div>
+                        <div class="outfit-weather">
+                            <i class="fas fa-sun"></i>
+                            30°
+                        </div>
+                    </div>
+                    
+                    <div class="outfit-items-grid">
+                        ${outfit.items.map(item => `
+                            <div class="outfit-item">
+                                <img src="${item.image}" alt="${item.name}">
+                                <div class="outfit-item-category">${item.category}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="outfit-notes">
+                        <p>${outfit.notes}</p>
+                    </div>
+                    
+                    <div class="outfit-actions">
+                        <button class="btn btn-primary" onclick="saveToMyOutfits()">
+                            <i class="fas fa-save"></i> حفظ في خزانتي
+                        </button>
+                        <button class="btn btn-secondary" onclick="findSimilarOutfits()">
+                            <i class="fas fa-search"></i> إطلالات مشابهة
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+}
+
+// Generate outfit based on weather
+function generateWeatherBasedOutfit(condition, temperature) {
+    // Categories: casual, formal, sport
+    // Conditions: sunny, cloudy, rainy, windy, cold, hot
+    
+    let outfitCategory = 'casual';
+    let outfitName = 'إطلالة يومية كاجوال';
+    let outfitNotes = 'إطلالة مناسبة للطقس اليوم ومريحة للأنشطة اليومية.';
+    
+    // Select right outfit based on temperature and condition
+    if (temperature < 15) {
+        outfitCategory = 'winter';
+        outfitName = 'إطلالة شتوية دافئة';
+        outfitNotes = 'طقس بارد اليوم، ننصح بارتداء طبقات متعددة للدفء.';
+    } else if (temperature > 30) {
+        outfitCategory = 'summer';
+        outfitName = 'إطلالة صيفية خفيفة';
+        outfitNotes = 'طقس حار اليوم، ننصح بملابس خفيفة وفاتحة اللون.';
+    }
+    
+    if (condition === 'rainy') {
+        outfitName = 'إطلالة مناسبة للمطر';
+        outfitNotes = 'توقع هطول أمطار اليوم، احرص على ارتداء ملابس مناسبة.';
+    } else if (condition === 'windy') {
+        outfitName = 'إطلالة مناسبة للرياح';
+        outfitNotes = 'طقس عاصف اليوم، ننصح بارتداء ملابس خارجية مناسبة.';
+    }
+    
+    // Create outfit items based on category
+    let items = [];
+    
+    switch (outfitCategory) {
+        case 'winter':
+            items = [
+                {
+                    name: 'سترة شتوية',
+                    category: 'ملابس خارجية',
+                    image: 'https://images.pexels.com/photos/984619/pexels-photo-984619.jpeg?auto=compress&cs=tinysrgb&w=600'
+                },
+                {
+                    name: 'سويتر',
+                    category: 'ملابس علوية',
+                    image: 'https://images.pexels.com/photos/6185171/pexels-photo-6185171.jpeg?auto=compress&cs=tinysrgb&w=600'
+                },
+                {
+                    name: 'بنطلون',
+                    category: 'ملابس سفلية',
+                    image: 'https://images.pexels.com/photos/52518/jeans-pants-blue-shop-52518.jpeg?auto=compress&cs=tinysrgb&w=600'
+                },
+                {
+                    name: 'حذاء',
+                    category: 'أحذية',
+                    image: 'https://images.pexels.com/photos/267202/pexels-photo-267202.jpeg?auto=compress&cs=tinysrgb&w=600'
+                }
+            ];
+            break;
+        case 'summer':
+            items = [
+                {
+                    name: 'تيشيرت خفيف',
+                    category: 'ملابس علوية',
+                    image: 'https://images.pexels.com/photos/3775120/pexels-photo-3775120.jpeg?auto=compress&cs=tinysrgb&w=600'
+                },
+                {
+                    name: 'شورت',
+                    category: 'ملابس سفلية',
+                    image: 'https://images.pexels.com/photos/4210866/pexels-photo-4210866.jpeg?auto=compress&cs=tinysrgb&w=600'
+                },
+                {
+                    name: 'حذاء صيفي',
+                    category: 'أحذية',
+                    image: 'https://images.pexels.com/photos/2529157/pexels-photo-2529157.jpeg?auto=compress&cs=tinysrgb&w=600'
+                },
+                {
+                    name: 'نظارة شمسية',
+                    category: 'إكسسوارات',
+                    image: 'https://images.pexels.com/photos/701877/pexels-photo-701877.jpeg?auto=compress&cs=tinysrgb&w=600'
+                }
+            ];
+            break;
+        default: // casual
+            items = [
+                {
+                    name: 'قميص كاجوال',
+                    category: 'ملابس علوية',
+                    image: 'https://images.pexels.com/photos/297933/pexels-photo-297933.jpeg?auto=compress&cs=tinysrgb&w=600'
+                },
+                {
+                    name: 'جينز',
+                    category: 'ملابس سفلية',
+                    image: 'https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600'
+                },
+                {
+                    name: 'حذاء رياضي',
+                    category: 'أحذية',
+                    image: 'https://images.pexels.com/photos/1464625/pexels-photo-1464625.jpeg?auto=compress&cs=tinysrgb&w=600'
+                }
+            ];
+    }
+    
+    // Add weather-specific items
+    if (condition === 'rainy') {
+        items.push({
+            name: 'معطف واقي من المطر',
+            category: 'ملابس خارجية',
+            image: 'https://images.pexels.com/photos/1192609/pexels-photo-1192609.jpeg?auto=compress&cs=tinysrgb&w=600'
+        });
+    }
+    
+    return {
+        name: outfitName,
+        weather_condition: condition,
+        weather_temp: temperature,
+        items: items,
+        notes: outfitNotes
+    };
+}
+
+// Get weather icon class based on condition
+function getWeatherIcon(condition) {
+    switch (condition) {
+        case 'sunny':
+            return 'fa-sun';
+        case 'cloudy':
+            return 'fa-cloud';
+        case 'rainy':
+            return 'fa-cloud-rain';
+        case 'windy':
+            return 'fa-wind';
+        case 'cold':
+            return 'fa-snowflake';
+        case 'hot':
+            return 'fa-temperature-high';
+        default:
+            return 'fa-cloud';
+    }
+}
+
+// Save outfit to My Outfits
+function saveToMyOutfits() {
+    if (!isLoggedIn()) {
+        showFlashMessage('يرجى تسجيل الدخول لحفظ الإطلالة', 'error');
+        return;
+    }
+    
+    showFlashMessage('تم حفظ الإطلالة في خزانتك');
+}
+
+// Find similar outfits
+function findSimilarOutfits() {
+    window.location.href = '/suggestions';
 }
 
 // Search functionality
@@ -314,6 +551,133 @@ function initHeaderPopups() {
             // Toggle notifications popup
             notificationsPopup.classList.toggle('active');
         });
+        
+        // Add actions for notification items
+        const notificationItems = notificationsPopup.querySelectorAll('.popup-item');
+        notificationItems.forEach((item, index) => {
+            item.addEventListener('click', function() {
+                // Set data attributes for different notifications
+                const notificationType = this.getAttribute('data-type') || '';
+                
+                // Remove notification
+                this.classList.add('removing');
+                setTimeout(() => {
+                    this.remove();
+                    
+                    // Update notification count
+                    const count = notificationsPopup.querySelectorAll('.popup-item:not(.removing)').length;
+                    const countBadge = document.querySelector('.notification-count');
+                    if (countBadge) {
+                        countBadge.textContent = count;
+                        if (count === 0) {
+                            countBadge.style.display = 'none';
+                            // Add empty state if no notifications
+                            notificationsPopup.innerHTML = `
+                                <div class="empty-notifications">
+                                    <i class="fas fa-bell-slash"></i>
+                                    <p>لا يوجد إشعارات جديدة</p>
+                                </div>
+                            `;
+                        }
+                    }
+                }, 300);
+                
+                // Handle different notification types
+                if (notificationType === 'offer') {
+                    window.location.href = '/shopping';
+                } else if (notificationType === 'outfit') {
+                    window.location.href = '/suggestions';
+                } else if (notificationType === 'weather') {
+                    // Show weather based outfit
+                    showWeatherAlert();
+                } else if (notificationType === 'update') {
+                    // Show app update notification
+                    showUpdateNotification();
+                } else {
+                    // Default action - just show message
+                    const title = this.querySelector('.popup-item-title');
+                    if (title) {
+                        showFlashMessage(`تم النقر على الإشعار: ${title.textContent}`);
+                    }
+                }
+            });
+            
+            // Set data types for existing notifications
+            if (index === 0) {
+                item.setAttribute('data-type', 'offer');
+            } else if (index === 1) {
+                item.setAttribute('data-type', 'outfit');
+            } else if (index === 2) {
+                item.setAttribute('data-type', 'weather');
+            }
+        });
+    }
+    
+    // Functions for notification actions
+    function showWeatherAlert() {
+        let modal = document.getElementById('weather-alert-modal');
+        
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'weather-alert-modal';
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h2>تنبيه الطقس</h2>
+                        <button class="modal-close"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="weather-alert">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>تنبيه: تغير في الطقس</h3>
+                            <p>هناك تغير متوقع في الطقس اليوم، ننصح بالتحقق من توقعات الطقس قبل الخروج.</p>
+                        </div>
+                        <div class="weather-forecast">
+                            <div class="forecast-item">
+                                <div class="forecast-day">اليوم</div>
+                                <div class="forecast-icon"><i class="fas fa-cloud-sun"></i></div>
+                                <div class="forecast-temp">28°</div>
+                            </div>
+                            <div class="forecast-item">
+                                <div class="forecast-day">غداً</div>
+                                <div class="forecast-icon"><i class="fas fa-cloud"></i></div>
+                                <div class="forecast-temp">26°</div>
+                            </div>
+                            <div class="forecast-item">
+                                <div class="forecast-day">بعد غد</div>
+                                <div class="forecast-icon"><i class="fas fa-sun"></i></div>
+                                <div class="forecast-temp">30°</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="showWeatherOutfits()">عرض الإطلالات المناسبة</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Add event listener to close button
+            const closeButton = modal.querySelector('.modal-close');
+            if (closeButton) {
+                closeButton.addEventListener('click', function() {
+                    closeModal('weather-alert-modal');
+                });
+            }
+        }
+        
+        openModal('weather-alert-modal');
+    }
+    
+    function showUpdateNotification() {
+        showFlashMessage('تم تحديث التطبيق إلى أحدث إصدار');
+    }
+    
+    // Show weather-based outfit suggestions
+    function showWeatherOutfits() {
+        closeModal('weather-alert-modal');
+        window.location.href = '/suggestions';
     }
     
     // Menu popup
