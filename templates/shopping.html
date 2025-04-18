@@ -33,14 +33,17 @@
         
         <div class="product-grid">
             {% for product in products %}
-            <div class="product-card">
+            <div class="product-card" data-category="{{ product.category }}">
                 <div class="product-tag">يناسب خزانتك</div>
-                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image" onclick="openProductModal({{ product.id }})">
                 <div class="product-details">
                     <div class="product-name">{{ product.name }}</div>
                     <div class="product-price">{{ product.price }} ريال</div>
-                    <button class="favorite-btn {% if product.id in favorites %}active{% endif %}" data-product-id="{{ product.id }}">
+                    <button class="favorite-btn {% if product.id in favorites %}active{% endif %}" data-product-id="{{ product.id }}" onclick="toggleFavorite(this, {{ product.id }})">
                         <i class="{% if product.id in favorites %}fas{% else %}far{% endif %} fa-heart"></i>
+                    </button>
+                    <button class="cart-btn" onclick="addToCart({{ product.id }})">
+                        <i class="fas fa-shopping-cart"></i>
                     </button>
                 </div>
             </div>
@@ -69,24 +72,225 @@
         <h2 class="section-heading">تصفح حسب الفئة</h2>
         
         <div class="category-grid">
-            <a href="#" class="category-card">
+            <a href="#" class="category-card" onclick="filterProducts('tops')">
                 <div class="category-icon"><i class="fas fa-tshirt"></i></div>
-                <div class="category-name">قمصان</div>
+                <div class="category-name">ملابس علوية</div>
             </a>
-            <a href="#" class="category-card">
+            <a href="#" class="category-card" onclick="filterProducts('bottoms')">
                 <div class="category-icon"><i class="fas fa-socks"></i></div>
-                <div class="category-name">بناطيل</div>
+                <div class="category-name">ملابس سفلية</div>
             </a>
-            <a href="#" class="category-card">
+            <a href="#" class="category-card" onclick="filterProducts('shoes')">
                 <div class="category-icon"><i class="fas fa-shoe-prints"></i></div>
                 <div class="category-name">أحذية</div>
             </a>
-            <a href="#" class="category-card">
+            <a href="#" class="category-card" onclick="filterProducts('accessories')">
                 <div class="category-icon"><i class="fas fa-glasses"></i></div>
                 <div class="category-name">إكسسوارات</div>
             </a>
+            <a href="#" class="category-card" onclick="filterProducts('outerwear')">
+                <div class="category-icon"><i class="fas fa-mitten"></i></div>
+                <div class="category-name">ملابس خارجية</div>
+            </a>
         </div>
     </section>
+    
+    <!-- Similar Products Section -->
+    <section class="similar-products-section">
+        <h2 class="section-heading">منتجات مشابهة</h2>
+        
+        <div class="product-grid">
+            {% for product in products[:4] %}
+            <div class="product-card">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image" onclick="openProductModal({{ product.id }})">
+                <div class="product-details">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-price">{{ product.price }} ريال</div>
+                    <div class="product-store">متجر ستايلر</div>
+                    <button class="favorite-btn {% if product.id in favorites %}active{% endif %}" data-product-id="{{ product.id }}" onclick="toggleFavorite(this, {{ product.id }})">
+                        <i class="{% if product.id in favorites %}fas{% else %}far{% endif %} fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    
+    <!-- Cart Summary -->
+    <div class="cart-summary" id="cart-summary">
+        <div class="cart-count">0</div>
+        <button class="cart-checkout-btn" onclick="openCartModal()">
+            عرض السلة <i class="fas fa-shopping-cart"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Product Details Modal -->
+<div class="modal-overlay" id="product-modal" style="display: none;">
+    <div class="modal-container product-modal">
+        <div class="modal-header">
+            <h3 class="modal-title">تفاصيل المنتج</h3>
+            <button class="modal-close" onclick="closeModal('product-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="product-details-container">
+                <div class="product-image-gallery">
+                    <img id="modal-product-image" src="" alt="صورة المنتج" class="product-detail-image">
+                </div>
+                
+                <div class="product-info">
+                    <h3 id="modal-product-name" class="product-detail-name"></h3>
+                    <div id="modal-product-price" class="product-detail-price"></div>
+                    <div id="modal-product-description" class="product-detail-description"></div>
+                    
+                    <div class="product-options">
+                        <div class="option-group">
+                            <label class="option-label">المقاس</label>
+                            <div class="option-buttons size-options">
+                                <button class="option-btn">S</button>
+                                <button class="option-btn">M</button>
+                                <button class="option-btn">L</button>
+                                <button class="option-btn">XL</button>
+                            </div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label class="option-label">الكمية</label>
+                            <div class="quantity-control">
+                                <button class="quantity-btn minus" onclick="decreaseQuantity()">-</button>
+                                <input type="number" class="quantity-input" id="product-quantity" value="1" min="1">
+                                <button class="quantity-btn plus" onclick="increaseQuantity()">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-actions">
+                        <button class="btn btn-primary btn-block" id="add-to-cart-btn" onclick="addToCartFromModal()">
+                            <i class="fas fa-shopping-cart"></i> أضف إلى السلة
+                        </button>
+                        <button class="btn btn-secondary btn-block" style="margin-top: 10px;" id="modal-favorite-btn" onclick="toggleFavoriteFromModal()">
+                            <i class="far fa-heart"></i> أضف إلى المفضلة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cart Modal -->
+<div class="modal-overlay" id="cart-modal" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">سلة التسوق</h3>
+            <button class="modal-close" onclick="closeModal('cart-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <div id="cart-items-container" class="cart-items-container">
+                <!-- Cart items will be filled dynamically -->
+            </div>
+            
+            <div class="cart-summary-details">
+                <div class="cart-total">
+                    <span>المجموع:</span>
+                    <span id="cart-total-price">0 ريال</span>
+                </div>
+            </div>
+            
+            <div class="cart-actions">
+                <button class="btn btn-primary btn-block" onclick="proceedToCheckout()">
+                    إتمام الشراء
+                </button>
+                <button class="btn btn-secondary btn-block" style="margin-top: 10px;" onclick="clearCart()">
+                    إفراغ السلة
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal-overlay" id="checkout-modal" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">إتمام الشراء</h3>
+            <button class="modal-close" onclick="closeModal('checkout-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label for="checkout-name" class="form-label">الاسم الكامل</label>
+                    <input type="text" id="checkout-name" name="name" required placeholder="أدخل اسمك الكامل">
+                </div>
+                
+                <div class="form-group">
+                    <label for="checkout-phone" class="form-label">رقم الهاتف</label>
+                    <input type="tel" id="checkout-phone" name="phone" required placeholder="05xxxxxxxx">
+                </div>
+                
+                <div class="form-group">
+                    <label for="checkout-address" class="form-label">العنوان</label>
+                    <textarea id="checkout-address" name="address" required placeholder="أدخل عنوان التوصيل" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="checkout-payment" class="form-label">طريقة الدفع</label>
+                    <select id="checkout-payment" name="payment" required>
+                        <option value="">اختر طريقة الدفع</option>
+                        <option value="credit_card">بطاقة ائتمان</option>
+                        <option value="cash_on_delivery">الدفع عند الاستلام</option>
+                        <option value="bank_transfer">تحويل بنكي</option>
+                    </select>
+                </div>
+                
+                <div class="order-summary">
+                    <h4>ملخص الطلب</h4>
+                    <div class="order-total">
+                        <span>المجموع:</span>
+                        <span id="order-total-price">0 ريال</span>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-block">تأكيد الطلب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Order Confirmation Modal -->
+<div class="modal-overlay" id="order-confirmation-modal" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">تم تأكيد الطلب</h3>
+            <button class="modal-close" onclick="closeModal('order-confirmation-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body text-center">
+            <div class="order-success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h4>تم تأكيد طلبك بنجاح!</h4>
+            <p>رقم الطلب: <span id="order-number">12345</span></p>
+            <p>سيتم التواصل معك قريباً لتأكيد تفاصيل الطلب.</p>
+            
+            <button class="btn btn-primary btn-block" style="margin-top: 20px;" onclick="closeModal('order-confirmation-modal')">
+                العودة للتسوق
+            </button>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
